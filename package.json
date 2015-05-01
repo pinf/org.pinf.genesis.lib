@@ -1,6 +1,10 @@
 {
 	"name": "org.pinf.genesis.lib",
 	"version": "0.1.1",
+	"dependencies": {
+		"bash.origin": "0.1.x",
+		"org.pinf.lib": "0.1.x"
+	},
 	"config": {
 		"pio.deploy.converter": {
 			"name": "nodejs-lib"
