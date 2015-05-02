@@ -567,7 +567,7 @@ throw new Error("getPluginUid - no descriptor");
 													// 2) Since no implementing module is declared we lookup the package based on the
 													//    config uri in our packages and look for the main module in the package.
 
-														var packageSourcePath = self.PATH.join(self.getPackagesDirpath(), uri.replace(/\//g, "~") + "/source/vcs/master");
+														var packageSourcePath = self.PATH.join(self.getPackagesDirpath(), uri.replace(/\//g, "~") + "/source/installed/master");
 
 														return API.FS.exists(packageSourcePath, function (exists) {
 															if (!exists) {
