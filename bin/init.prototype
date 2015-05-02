@@ -10,10 +10,6 @@ function init {
 	# NOTE: It is expected that the module at `INIT_MODULE_PATH` extends `init.js`
 	INIT_MODULE_PATH="$1"
 
-	function runPlugin {
-		echo "DEPRECTED: runPlugin(). Use runFor() instead. In: $__BO_DIR__"
-		exit 1
-	}
 
 	function runFor {
 		BO_run_node "$INIT_MODULE_PATH" "--for" "$1" ${*:2}
