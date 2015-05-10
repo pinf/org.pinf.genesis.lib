@@ -91,12 +91,22 @@ exports.for = function (module, init, implementation) {
 									getDeclaringPathId: function () {
 										return programId;
 									},
+									getPinfDirpath: function () {
+										if (!process.env.PGS_PINF_DIRPATH) {
+											throw new Error("'PGS_PINF_DIRPATH' environment variable not set!");
+										}
+										var env = locator.getEnv();
+										if (env && env.PGS_PINF_EPOCH) {
+											return API.PATH.join(process.env.PGS_PINF_DIRPATH, env.PGS_PINF_EPOCH);
+										}
+										return API.getPinfDirpath();
+									},
+									getDeclaringEnv: function () {
+										return locator.getEnv();
+									},
 									getDeclaringConfig: function () {
 										return locator.getConfig();
 									},
-			                    	getRuntimeDescriptorPath: function () {
-										return this.PATH.join(this.getDeclaringRootPath(), "..", this.getDeclaringPathId() || "", "program.rt.json");
-			                    	},
 			                    	getBootConfigId: function () {
 			                    		if (
 			                    			!this.programDescriptor._data.boot ||
