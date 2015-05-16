@@ -282,6 +282,9 @@ throw new Error("getPluginUid STOP");
 		                    	getNodeId: function () {
 		                    		return parsedConfig.id;
 		                    	},
+		                    	getContextId: function () {
+		                    		return parsedConfig.$context;
+		                    	},
 		                    	getPluginUid: function () {
 throw new Error("getPluginUid");			                    		
 if (!descriptor || !descriptor.uid) {
@@ -365,7 +368,7 @@ throw new Error("getPluginUid - no descriptor");
 														}
 														var previousResolvedSectionConfig = null;
 														for (alias in runtimeDescriptor) {
-															if (runtimeDescriptor[alias].$context === API.getNodeId()) {
+															if (runtimeDescriptor[alias].$context === API.getContextId()) {
 																previousResolvedSectionConfig = runtimeDescriptor[alias];
 																break;			
 															}
@@ -384,7 +387,7 @@ throw new Error("getPluginUid - no descriptor");
 															var changed = true;
 
 															// TODO: Make this a proper JSON-LD context.
-															resolvedSectionConfig.$context = API.getNodeId();
+															resolvedSectionConfig.$context = API.getContextId();
 
 															// TODO: Use sorted JSON.
 //															var configHash = API.CRYPTO.createHash("sha1").update(JSON.stringify(config)).digest("hex");
@@ -608,7 +611,7 @@ throw new Error("getPluginUid - no descriptor");
 												});
 											}
 
-											return locate(parsedConfig.id, function (err, implPath) {
+											return locate(parsedConfig.$context, function (err, implPath) {
 												if (err) {
 													if (err.code === 404) {
 														// We simulate the node as there is no code.
