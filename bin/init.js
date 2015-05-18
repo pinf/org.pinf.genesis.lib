@@ -380,7 +380,7 @@ throw new Error("getPluginUid - no descriptor");
 															API.console.debug("No plugin code loaded for '" + parsedConfig.id + "'!", parsedConfig);
 														}
 
-							            	API.console.verbose("Call resolve() on '" + parsedConfig.id + "' for:", API.getRootPath());
+							            	API.console.verbose("Call resolve() on '" + parsedConfig.id + "' implemented by '" + parsedConfig.$context + "' for program:", API.getRootPath());
 
 														return API.Q.when((api && api.resolve && api.resolve(resolver, config, previousResolvedSectionConfig)) || defaultResolve(resolver, config, previousResolvedSectionConfig)).then(function (resolvedSectionConfig) {
 
