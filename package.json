@@ -1,19 +1,33 @@
 {
-	"name": "org.pinf.genesis.lib",
-	"version": "0.1.1",
-	"dependencies": {
-		"bash.origin": "0.1.x",
-		"org.pinf.lib": "0.1.x",
-	    "fs-extra": "^0.16.5",
-	    "q": "^1.2.0",
-	    "require.async": "^0.1.1",
-	    "waitfor": "^0.1.3",
-	    "winston": "^0.9.0",
-	    "pinf-it-program-insight": "0.1.x"
-	},
-	"config": {
-		"pio.deploy.converter": {
-			"name": "nodejs-lib"
-		}
-	}
+  "name": "org.pinf.genesis.lib",
+  "description": "PINF.Genesis Library (PGL) for NodeJS",
+  "version": "0.1.1",
+  "main": "pgl.js",
+  "dependencies": {
+    "bash.origin": "0.1.x",
+    "deepmerge": "^0.2.10",
+    "fs-extra": "^0.16.5",
+    "org.pinf.lib": "0.1.x",
+    "pinf-it-program-insight": "0.1.x",
+    "q": "^1.2.0",
+    "require.async": "^0.1.1",
+    "waitfor": "^0.1.3",
+    "winston": "^0.9.0"
+  },
+  "config": {
+    "pio.deploy.converter": {
+      "name": "nodejs-lib"
+    },
+    "org.pinf.genesis.lib/0": {
+      "api": {
+        "consumes": {
+          "ASSERT": "assert",
+          "DEEPMERGE": "deepmerge"
+        },
+        "provides": {
+          "config": "./api/config.js"
+        }
+      }
+    }
+  }
 }
