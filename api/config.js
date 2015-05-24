@@ -34,8 +34,10 @@ require('../lib/api').forModule(require, module, function (API, exports) {
 
 	function getProgramDescriptor (callback) {
 		if (!process.env.PINF_PROGRAM_PATH) {
+			API.console.verbose("Skip loading (not found) program descriptor from 'PINF_PROGRAM_PATH':", process.env.PINF_PROGRAM_PATH);
 			return callback(null, null);
 		}
+		API.console.verbose("Loading program descriptor from 'PINF_PROGRAM_PATH':", process.env.PINF_PROGRAM_PATH);
 		return PROGRAM.fromFile({
 			// TODO: Provide necessary API functions.
 		}, process.env.PINF_PROGRAM_PATH, callback);
@@ -43,6 +45,10 @@ require('../lib/api').forModule(require, module, function (API, exports) {
 
 	return getProgramDescriptor(function (err, programDescriptor) {
 		if (err) return callback(err);
+
+		if (!programDescriptor) {
+			return callback(new Error("Error loading program descriptor from 'PINF_PROGRAM_PATH':", process.env.PINF_PROGRAM_PATH));
+		}
 
 		return callback(null, {
 			programDescriptor: programDescriptor
