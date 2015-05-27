@@ -7,6 +7,8 @@
     "bash.origin": "0.1.x",
     "deepmerge": "^0.2.10",
     "fs-extra": "^0.16.5",
+    "jsonwebtoken": "^5.0.1",
+    "node-forge": "^0.6.29",
     "org.pinf.lib": "0.1.x",
     "pinf-it-program-insight": "0.1.x",
     "q": "^1.2.0",
