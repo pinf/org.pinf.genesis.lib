@@ -24,7 +24,8 @@
       "api": {
         "consumes": {
           "ASSERT": "assert",
-          "DEEPMERGE": "deepmerge"
+          "DEEPMERGE": "deepmerge",
+          "FS": "fs"
         },
         "provides": {
           "config": "./api/config.js"

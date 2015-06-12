@@ -24,7 +24,7 @@ require('../lib/api').forModule(require, module, function (API, exports) {
 	}
 
 	if (
-		descriptor._path === API.programDescriptor.getBootPackageDescriptorPath()		
+		API.FS.realpathSync(descriptor._path) === API.FS.realpathSync(API.programDescriptor.getBootPackageDescriptorPath())
 	) {
 		var programConfig = API.programDescriptor.parsedConfigForLocator(LOCATOR.fromConfigId(descriptor._data.name + "/0"));
 		if (programConfig && programConfig.config) {
