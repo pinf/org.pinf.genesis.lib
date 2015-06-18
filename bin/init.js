@@ -390,62 +390,81 @@ throw new Error("getPluginUid STOP");
 
 											            	API.console.verbose("Call resolve() on '" + parsedConfig.id + "' implemented by '" + parsedConfig.$context + "' for program:", API.getRootPath());
 
-																		return API.Q.when((api && api.resolve && api.resolve(resolver, config, previousResolvedSectionConfig)) || defaultResolve(resolver, config, previousResolvedSectionConfig)).then(function (resolvedSectionConfig) {
+											            	return config.unfreeze().then(function (config) {
 
-																			var changed = true;
+												            	var resolving = null;
+												            	try {
+												            		resolving = (
+												            			(
+												            				api &&
+												            				api.resolve &&
+												            				api.resolve(resolver, config, previousResolvedSectionConfig)
+												            			) ||
+												            			defaultResolve(resolver, config, previousResolvedSectionConfig)
+												            		);
+												            	} catch (err) {
+												            		err.message += " (while calling resolve for '" + parsedConfig.id + "')";
+												            		err.stack += "\n(while calling resolve for '" + parsedConfig.id + "')";
+												            		throw err;
+												            	}
 
-																			// TODO: Make this a proper JSON-LD context.
-																			resolvedSectionConfig.$context = API.getContextId();
+																			return API.Q.when(resolving).then(function (resolvedSectionConfig) {
 
-																			// TODO: Use sorted JSON.
-				//															var configHash = API.CRYPTO.createHash("sha1").update(JSON.stringify(config)).digest("hex");
-																			var previousConfigHash = JSON.stringify(previousResolvedSectionConfig, null, 4);
-																			var configHash = JSON.stringify(resolvedSectionConfig, null, 4);
+																				var changed = true;
 
-				//																		API.console.debug("New resolved config for '" + API.getTargetPath() + "':", resolvedSectionConfig);
+																				// TODO: Make this a proper JSON-LD context.
+																				resolvedSectionConfig.$context = API.getContextId();
 
-																			return Q.denodeify(function (callback) {
+																				// TODO: Use sorted JSON.
+					//															var configHash = API.CRYPTO.createHash("sha1").update(JSON.stringify(config)).digest("hex");
+																				var previousConfigHash = JSON.stringify(previousResolvedSectionConfig, null, 4);
+																				var configHash = JSON.stringify(resolvedSectionConfig, null, 4);
 
-																				function remove (reason, callback) {
-																					return API.FS.exists(API.getTargetPath(), function (exists) {
-																						if (!exists) {
-																							// Nothing to remove because it does not yet exit.
-																							return callback(null);
-																						}
-																						API.console.debug("Removing '" + API.getTargetPath() + "' due to " + reason + "!");
-																						return API.FS.remove(API.getTargetPath(), callback);
-																					});
-																				}
+					//																		API.console.debug("New resolved config for '" + API.getTargetPath() + "':", resolvedSectionConfig);
 
-																				if (configHash === previousConfigHash) {
-																					changed = false;
+																				return Q.denodeify(function (callback) {
 
-																					API.console.debug("Resolved config for '" + API.getTargetPath() + "' has not changed!");
-																					return callback(null);
-																				}
-																				return remove("config hash having changed from '" + previousConfigHash + "' to '" + configHash, callback);
-				//																return remove("config hash having changed", callback);
+																					function remove (reason, callback) {
+																						return API.FS.exists(API.getTargetPath(), function (exists) {
+																							if (!exists) {
+																								// Nothing to remove because it does not yet exit.
+																								return callback(null);
+																							}
+																							API.console.debug("Removing '" + API.getTargetPath() + "' due to " + reason + "!");
+																							return API.FS.remove(API.getTargetPath(), callback);
+																						});
+																					}
 
-																			})().then(function () {
+																					if (configHash === previousConfigHash) {
+																						changed = false;
 
-																				resolvedConfig[resolvedSectionConfig.$to] = resolvedSectionConfig;
+																						API.console.debug("Resolved config for '" + API.getTargetPath() + "' has not changed!");
+																						return callback(null);
+																					}
+																					return remove("config hash having changed from '" + previousConfigHash + "' to '" + configHash, callback);
+					//																return remove("config hash having changed", callback);
 
-																				return API.Q.denodeify(API.FS.outputFile)(configHashPath, configHash, "utf8");
-																			}).then(function () {
+																				})().then(function () {
 
-																				API.console.debug("Resolved config changed: " + changed);
+																					resolvedConfig[resolvedSectionConfig.$to] = resolvedSectionConfig;
 
-																				if (!changed) {
-																					if (action === "turn") {
-																						if (!API.FS.existsSync(API.PATH.join(API.getTargetPath(), ".pinf.turn.done"))) {
-																							changed = true;
+																					return API.Q.denodeify(API.FS.outputFile)(configHashPath, configHash, "utf8");
+																				}).then(function () {
+
+																					API.console.debug("Resolved config changed: " + changed);
+
+																					if (!changed) {
+																						if (action === "turn") {
+																							if (!API.FS.existsSync(API.PATH.join(API.getTargetPath(), ".pinf.turn.done"))) {
+																								changed = true;
+																							}
 																						}
 																					}
-																				}
 
-																				return [resolvedSectionConfig, changed];
+																					return [resolvedSectionConfig, changed];
+																				});
 																			});
-																		});
+											            	});
 																	}
 
 																	return resolve(parsedConfig).fail(function (err) {
