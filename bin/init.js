@@ -47,7 +47,7 @@ exports.for = function (module, init, implementation) {
 		    program
 		        .option("-v, --verbose", "Show verbose progress")
 		        .option("-d, --debug", "Show debug output")
-		        .option("--for <path>", "The program config context/id to turn towards")
+		        .option("--for <path>", "Act for base package")
 		        .version(JSON.parse(API.FS.readFileSync(API.PATH.join(__dirname, "../package.json"))).version);
 
 			function ensureProgramLoaded (API) {
@@ -170,7 +170,7 @@ throw new Error("getPluginUid STOP");
 
 		    function actor (action, impl, wire, callback) {
 
-		        return function () {
+		        return function (command) {
 		        	API.VERBOSE = program.debug || program.verbose || false;
 		        	API.DEBUG = program.debug || false;
 
@@ -184,6 +184,7 @@ throw new Error("getPluginUid STOP");
 		            if (!program.for) {
 		                return callback("ERROR: '--for <path>' not set!");
 		            }
+
                 	var forPath = API.PATH.normalize(program.for);
 		            if (!API.FS.existsSync(forPath)) {
 		                return callback("ERROR: '--for " + forPath + "' path not found!");
@@ -205,6 +206,9 @@ throw new Error("getPluginUid STOP");
 	                	pluginDescriptor.name = pluginDescriptor.name || API.PATH.basename(API.PATH.dirname(_pluginDescriptor._path));
 
 										API.getBootConfigId = function () {
+											if (command.to) {
+												return command.to;
+											}
 											if (
 												!this.programDescriptor._data ||
 												!this.programDescriptor._data.boot ||
@@ -724,6 +728,7 @@ throw new Error("getPluginUid STOP");
 
 		    program
 		        .command("turn")
+		        .option("--to <id>", "The program config context/id to turn towards")
 		        .description("Take a PINF-compatible program and transform it to a PINF distribution bundle.")
 		        .action(actor("turn", implementation.turn, function (TURN) {
 		            return API.Q.fcall(function () {
