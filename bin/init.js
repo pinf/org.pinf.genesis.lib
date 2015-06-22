@@ -205,6 +205,16 @@ throw new Error("getPluginUid STOP");
 
 	                	pluginDescriptor.name = pluginDescriptor.name || API.PATH.basename(API.PATH.dirname(_pluginDescriptor._path));
 
+
+	                	var forceTurnAllFurtherNodes = false;
+	                	API.forceTurnAllFurtherNodes = function () {
+	                		forceTurnAllFurtherNodes = true;
+	                	}
+	                	API.getForceTurnAllFurtherNodes = function () {
+	                		return forceTurnAllFurtherNodes;
+	                	}
+
+
 										API.getBootConfigId = function () {
 											if (command.to) {
 												return command.to;
@@ -479,6 +489,11 @@ throw new Error("getPluginUid STOP");
 
 																		var resolvedSectionConfig = resolvedInfo[0];
 																		var changed = resolvedInfo[1];
+
+																		if (API.getForceTurnAllFurtherNodes()) {
+																			API.console.verbose("Furce turn of '" + parsedConfig.id + "' due to forceTurnAllFurtherNodes");
+																			changed = true;
+																		}
 
 																		function updateRuntimeConfig () {
 																			var path = self.getRuntimeDescriptorPath();
