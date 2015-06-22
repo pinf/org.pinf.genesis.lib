@@ -491,7 +491,7 @@ throw new Error("getPluginUid STOP");
 																		var changed = resolvedInfo[1];
 
 																		if (API.getForceTurnAllFurtherNodes()) {
-																			API.console.verbose("Furce turn of '" + parsedConfig.id + "' due to forceTurnAllFurtherNodes");
+																			API.console.verbose("Force turn of '" + parsedConfig.id + "' due to forceTurnAllFurtherNodes");
 																			changed = true;
 																		}
 
