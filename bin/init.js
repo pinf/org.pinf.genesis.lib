@@ -114,7 +114,7 @@ exports.for = function (module, init, implementation) {
 											getDeclaringConfig: function () {
 												return locator.getConfig();
 											},
-                    	getBootConfigId: function () {
+                    	getBootConfigTo: function () {
                     		if (
                     			!this.programDescriptor._data.boot ||
                     			!this.programDescriptor._data.boot.config
@@ -215,7 +215,7 @@ throw new Error("getPluginUid STOP");
 	                	}
 
 
-										API.getBootConfigId = function () {
+										API.getBootConfigTo = function () {
 											if (command.to) {
 												return command.to;
 											}
@@ -259,14 +259,25 @@ throw new Error("getPluginUid STOP");
 		                		if (err) return callback(err);
 
 				                	var plugins = {};
-				                	function loadAndRunPlugins (locator, history, callback) {
+				                	function loadAndRunPlugins (locators, history, callback) {
+
+				                		if (!Array.isArray(locators)) {
+				                			locators = [ locators ];
+				                		}
 
 													  // TODO: Move this into 'org.pinf.to/lib/vortex-wrapper.js'
 
-					                	var parsedConfig = self.programDescriptor.parsedConfigForLocator(locator);
+													  var locator = null;
+													  var parsedConfig = null;
+													  locators.forEach(function (_locator) {
+													  	if (parsedConfig) return;
+													  	locator = _locator;
+						                	parsedConfig = self.programDescriptor.parsedConfigForLocator(locator);
+													  });
 
 					                	if (!parsedConfig) {
 					                		console.log("self.programDescriptor", self.programDescriptor);
+					                		console.log("self.programDescriptor._data.config", JSON.stringify(self.programDescriptor._data.config, null, 4));
 					                		return callback(new Error("Error getting parsed config for locator: " + JSON.stringify(locator)));
 					                	}
 
@@ -699,13 +710,23 @@ throw new Error("getPluginUid STOP");
 					                	}
 					                	return waitfor();
 				                	}
-													return loadAndRunPlugins(self.LOCATOR.fromConfigId(self.getBootConfigId()), [self.getBootConfigId()], function (err) {
-														if (err) {
-															err.message += " (for locater fromUid '" + self.getBootConfigId() + "')";
-															err.stack += "\n(for locater fromUid '" + self.getBootConfigId() + "')";
+
+													return loadAndRunPlugins(
+														[
+															self.LOCATOR.fromConfigDepends(self.getBootConfigTo()),
+															self.LOCATOR.fromConfigId(self.getBootConfigTo())
+														],
+														[
+															self.getBootConfigTo()
+														],
+														function (err) {
+															if (err) {
+																err.message += " (for locater fromUid '" + self.getBootConfigTo() + "')";
+																err.stack += "\n(for locater fromUid '" + self.getBootConfigTo() + "')";
+															}
+															return callback(err);
 														}
-														return callback(err);
-													});
+													);
 				              	});
 				              })().then(function () {
 
@@ -722,7 +743,7 @@ throw new Error("getPluginUid STOP");
 
 				            return init(API, impl).then(function (api) {
 
-			                	API.console.verbose("Turn towards:", API.getBootConfigId());
+			                	API.console.verbose("Turn towards:", API.getBootConfigTo());
 
 			                	api = augmentAPI(API, api);
 
@@ -732,7 +753,7 @@ throw new Error("getPluginUid STOP");
 				                });
 				            }).then(function () {
 
-			                	API.console.verbose("Turned towards:", API.getBootConfigId());
+			                	API.console.verbose("Turned towards:", API.getBootConfigTo());
 		                	});
 			            }).then(function() {
 			            	return callback(null);
