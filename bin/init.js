@@ -776,6 +776,7 @@ throw new Error("getPluginUid STOP");
 
 		    program
 		        .command("spin")
+		        .option("--to <id>", "The program config context/id to turn towards")
 		        .description("Continuously turn on source change.")
 		        .action(actor("spin", implementation.spin, function (SPIN) {
 
