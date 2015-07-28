@@ -296,6 +296,9 @@ throw new Error("getPluginUid STOP");
 
 						                	var callback = function (err) {
 																if (err) {
+																	if (!err.stack) {
+																		console.error("WRONG ERROR FORMAT", err, new Error().stack);
+																	}
 																	err.message += " (at node '" + parsedConfig.id + "')";
 																	err.stack += "\n(at node '" + parsedConfig.id + "')";
 																}
