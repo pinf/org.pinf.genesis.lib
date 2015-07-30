@@ -781,58 +781,64 @@ throw new Error("getPluginUid STOP");
 		        .command("spin")
 		        .option("--to <id>", "The program config context/id to turn towards")
 		        .description("Continuously turn on source change.")
-		        .action(actor("spin", implementation.spin, function (SPIN) {
+		        .action(function (command) {
 
-		            var deferred = API.Q.defer();
-		            SPIN.on("error", function (err) {
-		                return deferred.reject(err);
-		            });
-		            function triggerTurn (changed) {
+					actor.acted = true;
 
-						// TODO: Instead of turning from beginning, turn from `changed`.
+		        	return actor("spin", implementation.spin, function (SPIN) {
 
-//console.log("TURN FROM CHANGED!", changed, turning);
+			            var deferred = API.Q.defer();
+			            SPIN.on("error", function (err) {
+			                return deferred.reject(err);
+			            });
+			            function triggerTurn (changed) {
 
-		            	var doTurn = (turning === 0);
-		            	turning += 1;
-		            	if (!doTurn) {
-		            		console.log("Already turning! Schedule one more for when the current one is done.");
-		            		return;
-		            	}
-		            	return actor("turn", implementation.turn, function (TURN) {
-			                return TURN.turn();
-			            }, function (err) {
-			            	turning -= 1;
+							// TODO: Instead of turning from beginning, turn from `changed`.
 
-//console.log("DONE TURN FROM CHANGED!", changed, turning);
+	//console.log("TURN FROM CHANGED!", changed, turning);
 
-			            	if (err) {
-			            		console.error("Error turning:", err.stack);
-			            	} else {
-			            		console.log("Done turning");
+			            	var doTurn = (turning === 0);
+			            	turning += 1;
+			            	if (!doTurn) {
+			            		console.log("Already turning! Schedule one more for when the current one is done.");
+			            		return;
 			            	}
-			            	// If there are more turn triggers we reset them and trigger one more turn.
-			            	if (turning > 0) {
-			            		turning = 0;
-			            		triggerTurn();
-			            	}
-			            })();
-		            }
-		            SPIN.on("turn", triggerTurn);
-		            SPIN.on("end", function () {
-		                return deferred.resolve();
-		            });
-		            API.Q.fcall(function () {
-		            	return SPIN.spin();
-		            }).then(deferred.resolve).fail(deferred.reject);
-			        return deferred.promise;
-		        }, callback));
+			            	return actor("turn", implementation.turn, function (TURN) {
+				                return TURN.turn();
+				            }, function (err) {
+				            	turning -= 1;
+
+	//console.log("DONE TURN FROM CHANGED!", changed, turning);
+
+				            	if (err) {
+				            		console.error("Error turning:", err.stack);
+				            	} else {
+				            		console.log("Done turning");
+				            	}
+				            	// If there are more turn triggers we reset them and trigger one more turn.
+				            	if (turning > 0) {
+				            		turning = 0;
+				            		triggerTurn();
+				            	}
+				            })(command);
+			            }
+			            SPIN.on("turn", triggerTurn);
+			            SPIN.on("end", function () {
+			                return deferred.resolve();
+			            });
+			            API.Q.fcall(function () {
+			            	return SPIN.spin();
+			            }).then(deferred.resolve).fail(deferred.reject);
+				        return deferred.promise;
+			        }, callback)(command);
+			    });
 
 		    program.parse(process.argv);
 
 		    if (!actor.acted) {
 		        var command = process.argv.slice(2).join(" ");
 		        if (command) {
+		        	console.error("process.argv", process.argv);
 		            console.error(("ERROR: Command '" + process.argv.slice(2).join(" ") + "' not found!").error);
 		        }
 		        program.outputHelp();
