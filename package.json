@@ -1,7 +1,7 @@
 {
     "name": "org.pinf.genesis.lib",
     "description": "PINF.Genesis Library (PGL) for NodeJS",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "main": "pgl.js",
     "dependencies": {
         "JSONPath": "brettz9/JSONPath#19b6a87041",
